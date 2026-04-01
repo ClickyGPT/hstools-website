@@ -13,7 +13,9 @@ import {
   DonutChart, 
   ParticleCanvas, 
   MouseSpotlight,
-  HeatmapCell
+  HeatmapCell,
+  Tooltip,
+  InteractiveCard
 } from '@/components/SlideElements';
 
 export default function EggWarlockDeck() {
@@ -82,18 +84,20 @@ export default function EggWarlockDeck() {
             </Reveal>
             <div className="grid grid-cols-4 gap-4 mb-6">
               {[
-                { label: 'Dust Cost', value: 8080, color: 'accent-1', suffix: '' },
-                { label: 'Total Cards', value: 30, color: 'accent-2', suffix: '' },
-                { label: 'Meta Win Rate', value: 51, color: 'accent-3', suffix: '%' },
-                { label: 'Legendaries', value: 3, color: 'accent-1', suffix: ' Legs' },
+                { label: 'Dust Cost', value: 8080, color: 'accent-1', suffix: '', tooltip: 'Total crafting cost for the full deck' },
+                { label: 'Total Cards', value: 30, color: 'accent-2', suffix: '', tooltip: 'Standard deck size' },
+                { label: 'Meta Win Rate', value: 51, color: 'accent-3', suffix: '%', tooltip: 'Global average across all ranks' },
+                { label: 'Legendaries', value: 3, color: 'accent-1', suffix: ' Legs', tooltip: 'Key power cards in the deck' },
               ].map((stat, i) => (
                 <Reveal key={i} delay={0.1 + i * 0.1}>
-                  <div className={`bg-${stat.color}/10 border border-${stat.color}/20 rounded-[14px] p-4 text-center transition-transform hover:-translate-y-1`}>
-                    <div className={`text-[2.4rem] font-black text-${stat.color} animate-glow-pulse`}>
-                      <AnimatedCounter value={stat.value} suffix={stat.suffix} />
+                  <Tooltip content={stat.tooltip}>
+                    <div className={`bg-${stat.color}/10 border border-${stat.color}/20 rounded-[14px] p-4 text-center transition-transform hover:-translate-y-1 focus:ring-2 focus:ring-${stat.color} outline-none`}>
+                      <div className={`text-[2.4rem] font-black text-${stat.color} animate-glow-pulse`}>
+                        <AnimatedCounter value={stat.value} suffix={stat.suffix} />
+                      </div>
+                      <div className="text-[0.65rem] tracking-[3px] uppercase text-text-muted mt-1">{stat.label}</div>
                     </div>
-                    <div className="text-[0.65rem] tracking-[3px] uppercase text-text-muted mt-1">{stat.label}</div>
-                  </div>
+                  </Tooltip>
                 </Reveal>
               ))}
             </div>
@@ -406,20 +410,15 @@ export default function EggWarlockDeck() {
             </Reveal>
             <div className="grid grid-cols-3 gap-3.5">
               {[
-                { icon: '🥚', type: '★ LEGENDARY · 3 MANA', title: 'The Egg of Khelos', desc: '0/3 Dormant. Gains a stage each time it receives buffs or damage. Hatches into Khelos the Shadowborn (20/20) at Stage 4. Can survive Hellfire via its 3 health.', color: 'accent-1' },
-                { icon: '🪺', type: 'RARE · 2 MANA', title: 'Holy Eggbearer', desc: '2/2 Battlecry: Discover a copy of The Egg of Khelos and add it to your hand. The single most important tutor — guarantees Egg on T3 from T2 Eggbearer.', color: 'accent-2' },
-                { icon: '🗺️', type: '★ LEGENDARY · 4 MANA', title: 'Elise the Navigator', desc: '3/3 Battlecry: Shuffle a copy of your Egg of Khelos into your deck for each stage it has NOT completed. Anti-silence insurance and a second win condition.', color: 'accent-3' },
-                { icon: '👺', type: '★ LEGENDARY · 7 MANA', title: 'Endbringer Umbra', desc: 'Battlecry: advance all your deathrattle minions by 1 stage. Critical 7-mana play that can immediately trigger Khelos if the Egg is at Stage 3.', color: 'accent-1' },
-                { icon: '🦈', type: '★ LEGENDARY · 9 MANA', title: 'Krog, Crater King', desc: 'Massive finisher. If played alongside or after Khelos (20/20), most opponents cannot deal with two overwhelming threats in a single turn.', color: 'accent-2' },
-                { icon: '🔥', type: 'COMMON · 3 MANA', title: 'Hellfire', desc: 'Deal 3 damage to all characters — including your own Egg. Masterful dual-purpose: AoE board clear AND egg activation. Core to the combo chain.', color: 'accent-3' },
+                { icon: '🥚', type: '★ LEGENDARY · 3 MANA', title: 'The Egg of Khelos', desc: '0/3 Dormant. Gains a stage each time it receives buffs or damage.', details: 'Hatches into Khelos the Shadowborn (20/20) at Stage 4. Can survive Hellfire via its 3 health. This is the primary win condition of the deck.', color: 'accent-1' },
+                { icon: '🪺', type: 'RARE · 2 MANA', title: 'Holy Eggbearer', desc: '2/2 Battlecry: Discover a copy of The Egg of Khelos and add it to your hand.', details: 'The single most important tutor — guarantees Egg on T3 from T2 Eggbearer. Essential for consistency in all matchups.', color: 'accent-2' },
+                { icon: '🗺️', type: '★ LEGENDARY · 4 MANA', title: 'Elise the Navigator', desc: '3/3 Battlecry: Shuffle a copy of your Egg of Khelos into your deck.', details: 'Shuffles a copy for each stage it has NOT completed. Anti-silence insurance and a second win condition for long games.', color: 'accent-3' },
+                { icon: '👺', type: '★ LEGENDARY · 7 MANA', title: 'Endbringer Umbra', desc: 'Battlecry: advance all your deathrattle minions by 1 stage.', details: 'Critical 7-mana play that can immediately trigger Khelos if the Egg is at Stage 3. Can also trigger other deathrattles in the deck.', color: 'accent-1' },
+                { icon: '🦈', type: '★ LEGENDARY · 9 MANA', title: 'Krog, Crater King', desc: 'Massive finisher. If played alongside or after Khelos (20/20).', details: 'Most opponents cannot deal with two overwhelming threats in a single turn. Provides a secondary massive body to close games.', color: 'accent-2' },
+                { icon: '🔥', type: 'COMMON · 3 MANA', title: 'Hellfire', desc: 'Deal 3 damage to all characters — including your own Egg.', details: 'Masterful dual-purpose: AoE board clear AND egg activation. Core to the combo chain and survival against aggro.', color: 'accent-3' },
               ].map((card, i) => (
                 <Reveal key={i} delay={0.2 + i * 0.1}>
-                  <div className={`bg-${card.color}/10 border border-${card.color}/20 rounded-[13px] p-3.5 transition-all hover:-translate-y-1 hover:shadow-[0_8px_30px_rgba(157,92,255,0.2)]`}>
-                    <div className="text-[1.6rem] mb-1.5">{card.icon}</div>
-                    <div className={`text-[0.62rem] tracking-[2px] uppercase text-${card.color} mb-1`}>{card.type}</div>
-                    <div className="text-[0.88rem] font-bold text-text mb-1">{card.title}</div>
-                    <div className="text-[0.73rem] text-text-secondary leading-relaxed">{card.desc}</div>
-                  </div>
+                  <InteractiveCard {...card} />
                 </Reveal>
               ))}
             </div>
@@ -518,27 +517,34 @@ export default function EggWarlockDeck() {
 
       <div className="fixed bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-3.5 z-[100] bg-accent-1/10 backdrop-blur-xl px-5.5 py-2 rounded-[40px] border border-accent-1/20">
         <button 
-          className="w-9 h-9 border-none bg-accent-1/10 text-accent-1 rounded-full text-[1.1rem] cursor-pointer flex items-center justify-center transition-colors hover:bg-accent-1/25"
+          aria-label="Previous Slide"
+          className="w-9 h-9 border-none bg-accent-1/10 text-accent-1 rounded-full text-[1.1rem] cursor-pointer flex items-center justify-center transition-colors hover:bg-accent-1/25 focus:outline-none focus:ring-2 focus:ring-accent-1"
           onClick={prevSlide}
         >
           ‹
         </button>
-        <div className="flex gap-1.5">
+        <div className="flex gap-1.5" role="tablist" aria-label="Slide Selection">
           {Array.from({ length: totalSlides }).map((_, i) => (
-            <div 
+            <button 
               key={i} 
-              className={`w-2 h-2 rounded-full cursor-pointer transition-all duration-300 ${i + 1 === currentSlide ? 'bg-accent-1 scale-140' : 'bg-accent-1/20'}`}
+              role="tab"
+              aria-selected={i + 1 === currentSlide}
+              aria-label={`Go to slide ${i + 1}`}
+              className={`w-2 h-2 rounded-full cursor-pointer transition-all duration-300 border-none p-0 focus:outline-none focus:ring-2 focus:ring-accent-1 ${i + 1 === currentSlide ? 'bg-accent-1 scale-140' : 'bg-accent-1/20'}`}
               onClick={() => setCurrentSlide(i + 1)}
             />
           ))}
         </div>
         <button 
-          className="w-9 h-9 border-none bg-accent-1/10 text-accent-1 rounded-full text-[1.1rem] cursor-pointer flex items-center justify-center transition-colors hover:bg-accent-1/25"
+          aria-label="Next Slide"
+          className="w-9 h-9 border-none bg-accent-1/10 text-accent-1 rounded-full text-[1.1rem] cursor-pointer flex items-center justify-center transition-colors hover:bg-accent-1/25 focus:outline-none focus:ring-2 focus:ring-accent-1"
           onClick={nextSlide}
         >
           ›
         </button>
-        <span className="text-[0.75rem] text-text-muted min-w-[36px] text-center">{currentSlide} / {totalSlides}</span>
+        <span className="text-[0.75rem] text-text-muted min-w-[36px] text-center" aria-live="polite">
+          Slide {currentSlide} of {totalSlides}
+        </span>
       </div>
     </main>
   );

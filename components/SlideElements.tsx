@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useState, useRef } from 'react';
-import { animate, useMotionValue, useTransform, motion } from 'motion/react';
+import { animate, useMotionValue, useTransform, motion, AnimatePresence } from 'motion/react';
 
 export function Reveal({ children, delay = 0, className = '' }: { children: React.ReactNode, delay?: number, className?: string }) {
   return (
@@ -282,15 +282,124 @@ export function MouseSpotlight() {
 }
 
 export function HeatmapCell({ title, desc, gradient, shadow }: { title: string, desc: string, gradient: string, shadow?: string }) {
+  const [show, setShow] = useState(false);
+  
   return (
     <div 
-      className="group relative flex flex-col items-center justify-center p-1.5 text-center rounded-lg cursor-default transition-all duration-200 hover:scale-[1.04] hover:z-10 min-h-[40px]"
+      role="gridcell"
+      aria-label={`${title}: ${desc}`}
+      tabIndex={0}
+      onMouseEnter={() => setShow(true)}
+      onMouseLeave={() => setShow(false)}
+      onFocus={() => setShow(true)}
+      onBlur={() => setShow(false)}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          setShow(!show);
+        }
+      }}
+      className="group relative flex flex-col items-center justify-center p-1.5 text-center rounded-lg cursor-default transition-all duration-200 hover:scale-[1.04] hover:z-10 min-h-[40px] focus:outline-none focus:ring-2 focus:ring-accent-1"
       style={{ background: gradient, boxShadow: shadow }}
     >
       <span className="text-[0.72rem] font-bold text-text">{title}</span>
-      <div className="absolute bottom-[calc(100%+6px)] left-1/2 -translate-x-1/2 bg-[#1a1230] border border-accent-1/40 px-2.5 py-1.5 rounded-lg text-[0.65rem] whitespace-nowrap z-[999] text-text pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity">
+      <div 
+        aria-hidden={!show}
+        className={`absolute bottom-[calc(100%+6px)] left-1/2 -translate-x-1/2 bg-[#1a1230] border border-accent-1/40 px-2.5 py-1.5 rounded-lg text-[0.65rem] whitespace-nowrap z-[999] text-text pointer-events-none transition-opacity duration-200 ${show ? 'opacity-100' : 'opacity-0'}`}
+      >
         {desc}
       </div>
     </div>
+  );
+}
+
+export function Tooltip({ children, content, className = '' }: { children: React.ReactNode, content: React.ReactNode, className?: string }) {
+  const [show, setShow] = useState(false);
+  
+  return (
+    <div 
+      className={`relative inline-block ${className}`}
+      onMouseEnter={() => setShow(true)}
+      onMouseLeave={() => setShow(false)}
+      onFocus={() => setShow(true)}
+      onBlur={() => setShow(false)}
+    >
+      <div tabIndex={0} className="focus:outline-none">
+        {children}
+      </div>
+      <AnimatePresence>
+        {show && (
+          <motion.div
+            initial={{ opacity: 0, y: 5, x: '-50%' }}
+            animate={{ opacity: 1, y: 0, x: '-50%' }}
+            exit={{ opacity: 0, y: 5, x: '-50%' }}
+            className="absolute bottom-full left-1/2 mb-2 px-3 py-2 bg-[#1a1230] border border-accent-1/40 rounded-lg text-[0.7rem] text-text whitespace-normal min-w-[200px] z-[1000] shadow-xl pointer-events-none"
+          >
+            {content}
+            <div className="absolute top-full left-1/2 -translate-x-1/2 border-8 border-transparent border-t-[#1a1230]" />
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
+export function InteractiveCard({ 
+  icon, 
+  type, 
+  title, 
+  desc, 
+  details,
+  color = 'accent-1' 
+}: { 
+  icon: string, 
+  type: string, 
+  title: string, 
+  desc: string, 
+  details?: string,
+  color?: string 
+}) {
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  return (
+    <motion.div 
+      layout
+      tabIndex={0}
+      role="button"
+      aria-expanded={isExpanded}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          setIsExpanded(!isExpanded);
+        }
+      }}
+      onClick={() => setIsExpanded(!isExpanded)}
+      className={`bg-${color}/10 border border-${color}/20 rounded-[13px] p-3.5 transition-all hover:shadow-[0_8px_30px_rgba(157,92,255,0.2)] cursor-pointer focus:outline-none focus:ring-2 focus:ring-${color} h-fit`}
+    >
+      <motion.div layout="position" className="text-[1.6rem] mb-1.5">{icon}</motion.div>
+      <motion.div layout="position" className={`text-[0.62rem] tracking-[2px] uppercase text-${color} mb-1`}>{type}</motion.div>
+      <motion.div layout="position" className="text-[0.88rem] font-bold text-text mb-1">{title}</motion.div>
+      <motion.div layout="position" className="text-[0.73rem] text-text-secondary leading-relaxed">{desc}</motion.div>
+      
+      <AnimatePresence>
+        {isExpanded && details && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            className="overflow-hidden"
+          >
+            <div className="pt-3 mt-3 border-t border-white/10 text-[0.7rem] text-text-muted italic leading-relaxed">
+              {details}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+      
+      {details && (
+        <div className="mt-2 text-[0.6rem] text-accent-1 font-bold uppercase tracking-wider">
+          {isExpanded ? 'Show Less' : 'Click for Details'}
+        </div>
+      )}
+    </motion.div>
   );
 }
