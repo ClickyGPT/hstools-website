@@ -1,0 +1,67 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@theme {
+  --color-bg: #0a0a0f;
+  --color-bg-deep: #050508;
+  --color-surface: #12121a;
+  --color-text: #f1f0ff;
+  --color-text-secondary: #b8b0e0;
+  --color-text-muted: #6b6490;
+  --color-accent-1: #9d5cff;
+  --color-accent-2: #ff4f8b;
+  --color-accent-3: #ffb84f;
+  --font-display: var(--font-display);
+  --font-body: var(--font-body);
+}
+
+@layer utilities {
+  .text-glow {
+    text-shadow: 0 0 20px rgba(157,92,255,0.6), 0 0 40px rgba(157,92,255,0.25);
+  }
+  .stat-glow {
+    text-shadow: 0 0 30px rgba(157,92,255,0.7), 0 0 60px rgba(157,92,255,0.3);
+  }
+  .bg-noise {
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.7' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    background-repeat: repeat;
+    background-size: 256px 256px;
+  }
+}
+
+@keyframes glow-pulse {
+  0%, 100% { text-shadow: 0 0 20px rgba(157,92,255,0.5), 0 0 40px rgba(157,92,255,0.2); }
+  50% { text-shadow: 0 0 35px rgba(157,92,255,0.9), 0 0 70px rgba(157,92,255,0.4); }
+}
+.animate-glow-pulse {
+  animation: glow-pulse 2.5s ease-in-out infinite;
+}
+
+@keyframes float-slow {
+  0% { transform: translate(0, 0) scale(1); }
+  25% { transform: translate(55px, -45px) scale(1.1); }
+  50% { transform: translate(-35px, 35px) scale(0.92); }
+  75% { transform: translate(45px, 18px) scale(1.07); }
+  100% { transform: translate(0, 0) scale(1); }
+}
+.animate-float-slow {
+  animation: float-slow 11s ease-in-out infinite;
+}
+
+@keyframes float-drift {
+  0% { transform: translate(0, 0) scale(1) rotate(0deg); }
+  33% { transform: translate(-45px, -55px) scale(1.12) rotate(3deg); }
+  66% { transform: translate(38px, 28px) scale(0.9) rotate(-2deg); }
+  100% { transform: translate(0, 0) scale(1) rotate(0deg); }
+}
+.animate-float-drift {
+  animation: float-drift 15s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-14px); }
+}
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
